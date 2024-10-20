@@ -108,6 +108,43 @@ public class Poe_Part_2 {
             }
         } while (!confirmation.equals("yes"));
         
-        
+        // Registration is complete at this point
+        System.out.println("Registration complete!");
+        System.out.println("Username: " + username);
+        System.out.println("First Name: " + firstName);
+        System.out.println("Last Name: " + lastName);
+
+        // Attempt to login with a maximum of 3 attempts
+        int maxAttempts = 3;
+        int attempts = 0;
+        boolean loginSuccess = false;
+
+        while (attempts < maxAttempts && !loginSuccess) {
+            System.out.print("Please enter your username to login: ");
+            String loginUsername = sc.nextLine();
+            
+            System.out.print("Please enter your password to login: ");
+            String loginPassword = sc.nextLine();
+
+            // Use loginUser method from LoginClass to validate credentials
+            loginSuccess = login.loginUser(loginUsername, loginPassword);
+
+            // Display login status using returnLoginStatus from LoginClass
+            System.out.println(login.returnLoginStatus(loginSuccess));
+
+            if (!loginSuccess) {
+                attempts++;
+                if (attempts < maxAttempts) {
+                    System.out.println("You have " + (maxAttempts - attempts) + " attempt(s) remaining.");
+                }
+            }
+        }
+
+        // If the user has exceeded the maximum login attempts
+        if (!loginSuccess) {
+            System.out.println("You have been locked out due to too many failed login attempts.");
+        }
+
+        sc.close();
     }
 }
