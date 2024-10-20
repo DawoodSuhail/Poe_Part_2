@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
  * @author Dawood
  */
 public class LoginClass {
+    
     // Constants for validation
     private static final int MAX_USERNAME_LENGTH = 5;
     private static final int MIN_PASSWORD_LENGTH = 8;

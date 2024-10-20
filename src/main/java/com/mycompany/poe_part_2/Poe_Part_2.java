@@ -3,6 +3,7 @@
  */
 
 package com.mycompany.poe_part_2;
+import javax.swing.JOptionPane;
 import java.util.Scanner;
 
 /**
@@ -16,135 +17,88 @@ public class Poe_Part_2 {
         LoginClass login = new LoginClass(); // Create an instance of LoginClass
 
         // Variables to store user input
-        String firstName;
-        String lastName;
-        String username;
-        String password;
-        
-        // Register the user (first name and last name will be part of the registration)
-        do {
-            System.out.print("Enter first name: ");
-            firstName = sc.nextLine();
-            if (firstName.isEmpty()) {
-                System.out.println("First name cannot be empty.");
-            } else {
-                System.out.println("First name successfully captured.");
-            }
-        } while (firstName.isEmpty());
+        String firstName, lastName, username, password;
+
+        // User Registration
+        firstName = JOptionPane.showInputDialog("Enter first name:");
+        lastName = JOptionPane.showInputDialog("Enter last name:");
 
         do {
-            System.out.print("Enter last name: ");
-            lastName = sc.nextLine();
-            if (lastName.isEmpty()) {
-                System.out.println("Last name cannot be empty.");
-            } else {
-                System.out.println("Last name successfully captured.");
-            }
-        } while (lastName.isEmpty());
-
-        // Collect username and check with login.checkUserName() method
-        do {
-            System.out.print("Enter username: ");
-            username = sc.nextLine();
+            username = JOptionPane.showInputDialog("Enter username:");
             if (!login.checkUserName(username)) {
-                System.out.println("Username is not correctly formatted, please ensure it contains an underscore and is no more than 5 characters.");
-            } else {
-                System.out.println("Username successfully captured.");
+                JOptionPane.showMessageDialog(null, "Username must contain an underscore and not exceed 5 characters.");
             }
         } while (!login.checkUserName(username));
 
-        // Collect password and check with login.checkPasswordComplexity() method
         do {
-            System.out.print("Enter password: ");
-            password = sc.nextLine();
+            password = JOptionPane.showInputDialog("Enter password:");
             if (!login.checkPasswordComplexity(password)) {
-                System.out.println("Password is not correctly formatted. Ensure it contains at least 8 characters, a capital letter, a number, and a special character.");
-            } else {
-                System.out.println("Password successfully captured.");
+                JOptionPane.showMessageDialog(null, "Password must have at least 8 characters, a capital letter, a number, and a special character.");
             }
         } while (!login.checkPasswordComplexity(password));
 
-        // Register the user using the registerUser method from LoginClass
-        String registrationStatus = login.registerUser(username, password);
-        System.out.println(registrationStatus);
+        login.registerUser(username, password);
+        JOptionPane.showMessageDialog(null, "Welcome to DawoodDifference!");
 
-        // Confirmation of captured information
-        String confirmation;
-        do {
-            System.out.println("\nPlease confirm your details:");
-            System.out.println("Username: " + username);
-            System.out.println("Password: " + password.replaceAll(".", "*")); // Hide password
-            System.out.println("First Name: " + firstName);
-            System.out.println("Last Name: " + lastName);
-            System.out.print("Are these details correct? (yes/no): ");
-            confirmation = sc.nextLine().trim().toLowerCase();
-
-            if (confirmation.equals("no")) {
-                System.out.println("Let's re-enter your details.");
-
-                // Re-enter details if the user confirms no
-                do {
-                    System.out.print("Enter first name: ");
-                    firstName = sc.nextLine();
-                } while (firstName.isEmpty());
-
-                do {
-                    System.out.print("Enter last name: ");
-                    lastName = sc.nextLine();
-                } while (lastName.isEmpty());
-
-                do {
-                    System.out.print("Enter username: ");
-                    username = sc.nextLine();
-                } while (!login.checkUserName(username));
-
-                do {
-                    System.out.print("Enter password: ");
-                    password = sc.nextLine();
-                } while (!login.checkPasswordComplexity(password));
-                
-                registrationStatus = login.registerUser(username, password);
-                System.out.println(registrationStatus);
-            }
-        } while (!confirmation.equals("yes"));
-        
-        // Registration is complete at this point
-        System.out.println("Registration complete!");
-        System.out.println("Username: " + username);
-        System.out.println("First Name: " + firstName);
-        System.out.println("Last Name: " + lastName);
-
-        // Attempt to login with a maximum of 3 attempts
-        int maxAttempts = 3;
-        int attempts = 0;
+        // Login Process
         boolean loginSuccess = false;
-
-        while (attempts < maxAttempts && !loginSuccess) {
-            System.out.print("Please enter your username to login: ");
-            String loginUsername = sc.nextLine();
-            
-            System.out.print("Please enter your password to login: ");
-            String loginPassword = sc.nextLine();
-
-            // Use loginUser method from LoginClass to validate credentials
+        for (int attempts = 0; attempts < 3; attempts++) {
+            String loginUsername = JOptionPane.showInputDialog("Enter your username to login:");
+            String loginPassword = JOptionPane.showInputDialog("Enter your password to login:");
             loginSuccess = login.loginUser(loginUsername, loginPassword);
+            JOptionPane.showMessageDialog(null, login.returnLoginStatus(loginSuccess));
+            if (loginSuccess) break;
+        }
 
-            // Display login status using returnLoginStatus from LoginClass
-            System.out.println(login.returnLoginStatus(loginSuccess));
+        if (!loginSuccess) {
+            JOptionPane.showMessageDialog(null, "You have been locked out due to too many failed login attempts.");
+            System.exit(0);
+        }
 
-            if (!loginSuccess) {
-                attempts++;
-                if (attempts < maxAttempts) {
-                    System.out.println("You have " + (maxAttempts - attempts) + " attempt(s) remaining.");
-                }
+        // Main Menu
+        while (true) {
+            String menuOption = JOptionPane.showInputDialog("Choose an option:\n1) Add Tasks\n2) Coming Soon\n3) Quit");
+            switch (menuOption) {
+                case "1":
+                    addTasks();
+                    break;
+                case "2":
+                    JOptionPane.showMessageDialog(null, "Feature coming soon!");
+                    break;
+                case "3":
+                    JOptionPane.showMessageDialog(null, "Exiting the application.");
+                    System.exit(0);
+                default:
+                    JOptionPane.showMessageDialog(null, "Invalid option. Please select 1, 2, or 3.");
             }
         }
+    }
 
-        // If the user has exceeded the maximum login attempts
-        if (!loginSuccess) {
-            System.out.println("You have been locked out due to too many failed login attempts.");
+    public static void addTasks() {
+        int numTasks = Integer.parseInt(JOptionPane.showInputDialog("How many tasks do you want to enter?"));
+        Task[] tasks = new Task[numTasks];
+        int totalHours = 0;
+
+        for (int i = 0; i < numTasks; i++) {
+            tasks[i] = new Task();
+            tasks[i].taskName = JOptionPane.showInputDialog("Enter Task Name:");
+            tasks[i].developerDetails = JOptionPane.showInputDialog("Enter Developer's First and Last Name:");
+            do {
+                tasks[i].taskDescription = JOptionPane.showInputDialog("Enter Task Description (max 50 characters):");
+                if (!tasks[i].checkTaskDescription()) {
+                    JOptionPane.showMessageDialog(null, "Task description must be less than 50 characters.");
+                }
+            } while (!tasks[i].checkTaskDescription());
+            
+            tasks[i].taskDuration = Integer.parseInt(JOptionPane.showInputDialog("Enter Task Duration (hours):"));
+            String[] statuses = {"To Do", "Done", "Doing"};
+            tasks[i].taskStatus = (String) JOptionPane.showInputDialog(null, "Choose Task Status", "Task Status", JOptionPane.QUESTION_MESSAGE, null, statuses, statuses[0]);
+            tasks[i].taskID = tasks[i].createTaskID(i);
+            
+            JOptionPane.showMessageDialog(null, tasks[i].printTaskDetails());
+            totalHours += tasks[i].returnTotalHours();
         }
-
-        sc.close();
+        
+        JOptionPane.showMessageDialog(null, "Total Hours for all tasks: " + totalHours);
     }
 }
